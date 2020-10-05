@@ -474,31 +474,31 @@ namespace Hotel
                 do
                 {
                     incorrectAnswer = false;
-                    int menu2Answer = Menu2();
+                    string menu2Answer = Menu2();
                     Console.Clear();
 
                     switch (menu2Answer)
                     {
-                        case 1:
+                        case "1":
                             ShowAllRooms();
                             break;
 
-                        case 2:
+                        case "2":
                             ShowAllOccupiedRooms();
                             break;
 
-                        case 3:
+                        case "3":
                             ShowAllEmptyRooms();
                             break;
 
-                        case 4:
+                        case "4":
                             stay = false;
                             Console.Clear();
                             break;
 
                         default:
                             incorrectAnswer = true;
-                            Console.WriteLine("\tRespuesta incorrecta. Pruebe otra vez.");
+                            Console.WriteLine("\n\tRespuesta incorrecta. Pruebe otra vez.");
                             Thread.Sleep(2000);
                             Console.Clear();
                             break;
@@ -510,7 +510,7 @@ namespace Hotel
 
 
         //Menu 2
-        static int Menu2()
+        static string Menu2()
         {
             Console.Write("" +
                 "\n\t1.- Ver listado de todas las habitaciones" +
@@ -519,8 +519,7 @@ namespace Hotel
                 "\n\t4.- Salir" +
                 "\n\n\t-->");
 
-            int menu2Answer = Convert.ToInt32(Console.ReadLine());
-            return menu2Answer;
+            return Console.ReadLine();
         }
 
         private static void ShowAllRooms()
