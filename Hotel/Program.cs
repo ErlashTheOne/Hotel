@@ -38,32 +38,32 @@ namespace Hotel
                 do
                 {
                     resIncorrecta = false;
-                    int RespMenu = Menu();
+                    string RespMenu = Menu();
                     Console.Clear();
 
                     switch (RespMenu)
                     {
-                        case 1:
+                        case "1":
                             Registro();
                             break;
 
-                        case 2:
+                        case "2":
                             EditarCliente();
                             break;
 
-                        case 3:
+                        case "3":
                             CheckIn();
                             break;
 
-                        case 4:
+                        case "4":
                             CheckOut();
                             break;
 
-                        case 5:
+                        case "5":
                             VerHabitaciones();
                             break;
 
-                        case 6:
+                        case "6":
                             stay = false;
                             Console.WriteLine("\n\tGracias por usar nuestros servícios. Que pase un buen día.");
                             Thread.Sleep(2000);
@@ -86,7 +86,7 @@ namespace Hotel
 
 
         //Menu
-        static int Menu()
+        static string Menu()
         {
             Console.WriteLine("\n\tHotel 'El Hotel' ****");
             Console.Write("" +
@@ -98,7 +98,7 @@ namespace Hotel
                 "\n\t6.- Salir" +
                 "\n\n\t-->");
 
-            int RespMenu = Convert.ToInt32(Console.ReadLine());
+            string RespMenu = Console.ReadLine();
             return RespMenu;
         }
 
