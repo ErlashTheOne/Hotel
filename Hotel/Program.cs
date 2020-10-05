@@ -8,7 +8,7 @@ namespace Hotel
     class Program
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["HOTEL"].ConnectionString;
-        static SqlConnection conexion = new SqlConnection(connectionString);
+        static SqlConnection connection = new SqlConnection(connectionString);
 
         public static string[] queries = {
             "SELECT DNI FROM Clientes WHERE DNI=",  //0
@@ -30,25 +30,25 @@ namespace Hotel
 
         static void Main(string[] args)
         {
-            bool resIncorrecta;
+            bool incorrectAnswer;
             bool stay = true;
 
             while (stay)
             {
                 do
                 {
-                    resIncorrecta = false;
-                    string RespMenu = Menu();
+                    incorrectAnswer = false;
+                    string MenuAnswer = Program.Menu();
                     Console.Clear();
 
-                    switch (RespMenu)
+                    switch (MenuAnswer)
                     {
                         case "1":
-                            Registro();
+                            Register();
                             break;
 
                         case "2":
-                            EditarCliente();
+                            EditClient();
                             break;
 
                         case "3":
@@ -60,7 +60,7 @@ namespace Hotel
                             break;
 
                         case "5":
-                            VerHabitaciones();
+                            SeeRooms();
                             break;
 
                         case "6":
@@ -70,14 +70,14 @@ namespace Hotel
                             break;
 
                         default:
-                            resIncorrecta = true;
+                            incorrectAnswer = true;
                             Console.WriteLine("\tRespuesta incorrecta. Pruebe otra vez.");
                             Thread.Sleep(2000);
                             Console.Clear();
                             break;
                     }
 
-                } while (resIncorrecta == true);
+                } while (incorrectAnswer == true);
 
             }
             Environment.Exit(0);
@@ -97,14 +97,12 @@ namespace Hotel
                 "\n\t5.- Ver habitaciones" +
                 "\n\t6.- Salir" +
                 "\n\n\t-->");
-
-            string RespMenu = Console.ReadLine();
-            return RespMenu;
+            return Console.ReadLine();
         }
 
 
         //Registro
-        static void Registro()
+        static void Register()
         {
             string dni = string.Empty;
             do
@@ -113,63 +111,65 @@ namespace Hotel
                 dni = Console.ReadLine();
                 if (dni.Length != 9)
                 {
-                    Console.WriteLine("\tEl formato del DNI es incorrecto");
+                    Console.Clear();
+                    Console.WriteLine("\n\tEl formato del DNI es incorrecto");
                     Thread.Sleep(2000);
                     Console.Clear();
                 }
             } while (dni.Length != 9);
-            if (ComprobarCliente(dni))
+            if (CheckClient(dni))
             {
-                Console.WriteLine("\tEl usuario ya estaba registrado");
+                Console.Clear();
+                Console.WriteLine("\n\tEl usuario ya estaba registrado");
                 Thread.Sleep(2000);
                 Console.Clear();
             }
             else
             {
                 Console.Write("\n\tIntroduce tu Nombre: ");
-                string nombre = Console.ReadLine();
+                string name = Console.ReadLine();
                 Console.Write("\n\tIntroduce tu Apellido: ");
-                string apellido = Console.ReadLine();
-                InsertarCliente(dni, nombre, apellido);
+                string surname = Console.ReadLine();
+                InsertClient(dni, name, surname);
                 Console.Clear();
-                Console.WriteLine($"\tUsuario registrado: {nombre} {apellido} con DNI {dni}");
+                Console.WriteLine($"\n\tUsuario registrado: {name} {surname} con DNI {dni}");
                 Thread.Sleep(3000);
                 Console.Clear();
             }
         }
 
-        static bool ComprobarCliente(string dni)
+        static bool CheckClient(string dni)
         {
-            conexion.Open();
+            connection.Open();
             string query = queries[0] + $"'{dni}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            if (clientes.Read())
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataReader client = command.ExecuteReader();
+            if (client.Read())
             {
-                conexion.Close();
+                connection.Close();
                 return true;
             }
             else
             {
-                conexion.Close();
+                connection.Close();
                 return false;
             }
         }
 
-        static void InsertarCliente(string dni, string nombre, string apellido)
+        static void InsertClient(string dni, string name, string surname)
         {
-            conexion.Open();
+            connection.Open();
 
-            string query = queries[1] + $"('{dni}', '{nombre}', '{apellido}')";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            comando.ExecuteNonQuery();
+            string query = queries[1] + $"('{dni}', '{name}', '{surname}')";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
         }
 
 
         //Editar Cliente
-        static void EditarCliente()
+        static void EditClient()
         {
             string dni = string.Empty;
             bool invalidDni = false;
@@ -184,7 +184,8 @@ namespace Hotel
 
                     if (dni.Length != 9 && dni.ToLower() != "salir")
                     {
-                        Console.WriteLine("\tEl formato del DNI es incorrecto");
+                        Console.Clear();
+                        Console.WriteLine("\n\tEl formato del DNI es incorrecto");
                         Thread.Sleep(2000);
                         Console.Clear();
                     }
@@ -192,14 +193,15 @@ namespace Hotel
 
                 if (dni.ToLower() != "salir")
                 {
-                    if (ComprobarCliente(dni))
+                    if (CheckClient(dni))
                     {
-                        ActualizarClienteConDni(dni);
+                        UpdateClientWithDni(dni);
                     }
                     else
                     {
                         invalidDni = true;
-                        Console.WriteLine("\tEl DNI no pertenece a nadie.");
+                        Console.Clear();
+                        Console.WriteLine("\n\tEl DNI no pertenece a nadie.");
                         Thread.Sleep(2000);
                         Console.Clear();
                     }
@@ -212,24 +214,24 @@ namespace Hotel
             } while (invalidDni == true);
         }
 
-        static void ActualizarClienteConDni(string dni)
+        static void UpdateClientWithDni(string dni)
         {
 
             Console.Write("\n\tIntroduce el nombre: ");
-            string nombre = Console.ReadLine();
+            string name = Console.ReadLine();
 
             Console.Write("\n\tIntroduce el apellido: ");
-            string apellido = Console.ReadLine();
+            string surname = Console.ReadLine();
 
-            conexion.Open();
+            connection.Open();
 
-            string query = queries[2] + $"Nombre = '{nombre}', Apellido = '{apellido}' WHERE Dni = '{dni}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            comando.ExecuteNonQuery();
+            string query = queries[2] + $"Nombre = '{name}', Apellido = '{surname}' WHERE Dni = '{dni}'";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
             Console.Clear();
-            Console.WriteLine($"\tUsuario actualizado: {nombre} {apellido} con DNI {dni}");
+            Console.WriteLine($"\n\tUsuario actualizado: {name} {surname} con DNI {dni}");
             Thread.Sleep(3000);
             Console.Clear();
         }
@@ -255,29 +257,29 @@ namespace Hotel
 
             if (dni.ToLower() != "salir")
             {
-                if (ComprobarCliente(dni))
+                if (CheckClient(dni))
                 {
-                    bool habitacionInvalida;
+                    bool invalidRoom;
                     do
                     {
-                        habitacionInvalida = false;
-                        PintarHabitacionesDisponibles();
+                        invalidRoom = false;
+                        ShowAvailableRooms();
                         Console.Write("\n\t¿Que habitación deseas? ");
-                        string resHabitaciones = Console.ReadLine();
+                        string roomsAnswer = Console.ReadLine();
 
-                        if (ComprobarHabitacion(resHabitaciones))
+                        if (CheckRooms(roomsAnswer))
                         {
-                            ReservarHabitacion(dni, resHabitaciones);
+                            ReserveRoom(dni, roomsAnswer);
                         }
                         else
                         {
-                            habitacionInvalida = true;
+                            invalidRoom = true;
                             Console.Clear();
                             Console.WriteLine("\n\tEl número de habitación introducido no es válido.");
                             Thread.Sleep(3000);
                             Console.Clear();
                         }
-                    } while (habitacionInvalida);
+                    } while (invalidRoom);
                 }
                 else
                 {
@@ -292,60 +294,60 @@ namespace Hotel
             }
         }
 
-        static void PintarHabitacionesDisponibles()
+        static void ShowAvailableRooms()
         {
             Console.Clear();
             Console.WriteLine("\n\tHabitaciones disponibles:");
-            conexion.Open();
-            SqlCommand comando = new SqlCommand(queries[3], conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            while (clientes.Read())
+            connection.Open();
+            SqlCommand command = new SqlCommand(queries[3], connection);
+            SqlDataReader client = command.ExecuteReader();
+            while (client.Read())
             {
-                Console.WriteLine($"\t{ clientes["CodHabitacion"]} {clientes["Estado"]} ");
+                Console.WriteLine($"\t{ client["CodHabitacion"]} {client["Estado"]} ");
             }
-            conexion.Close();
+            connection.Close();
         }
 
-        static bool ComprobarHabitacion(string resHabitaciones)
+        static bool CheckRooms(string roomAnswer)
         {
-            conexion.Open();
-            string query = queries[4] + $"'{resHabitaciones}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            if (clientes.Read())
+            connection.Open();
+            string query = queries[4] + $"'{roomAnswer}'";
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataReader client = command.ExecuteReader();
+            if (client.Read())
             {
-                conexion.Close();
+                connection.Close();
                 return true;
             }
             else
             {
-                conexion.Close();
+                connection.Close();
                 return false;
             }
         }
 
-        static void ReservarHabitacion(string dni, string resHabitaciones)
+        static void ReserveRoom(string dni, string roomsAnswer)
         {
-            conexion.Open();
+            connection.Open();
 
-            string query = queries[5] + $"'reservado' WHERE CodHabitacion = '{resHabitaciones}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            comando.ExecuteNonQuery();
+            string query = queries[5] + $"'reservado' WHERE CodHabitacion = '{roomsAnswer}'";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
 
             DateTime checkInTime = DateTime.Now;
 
-            conexion.Open();
+            connection.Open();
 
-            string query2 = queries[6] + $"('{dni}', '{resHabitaciones}', '{checkInTime.ToString()}')";
-            SqlCommand comando2 = new SqlCommand(query2, conexion);
-            comando2.ExecuteNonQuery();
+            string query2 = queries[6] + $"('{dni}', '{roomsAnswer}', '{checkInTime.ToString()}')";
+            SqlCommand command2 = new SqlCommand(query2, connection);
+            command2.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
 
             Console.Clear();
-            Console.WriteLine($"\n\tReserva efectuada de la habitacion {resHabitaciones}, para el cliente {dni}, del día {checkInTime.ToString()}");
+            Console.WriteLine($"\n\tReserva efectuada de la habitacion {roomsAnswer}, para el cliente {dni}, del día {checkInTime.ToString()}");
             Thread.Sleep(3000);
             Console.Clear();
 
@@ -372,15 +374,15 @@ namespace Hotel
 
             if (dni.ToLower() != "salir")
             {
-                if (ComprobarCliente(dni))
+                if (CheckClient(dni))
                 {
-                    PintarHabitacionesOcupadas();
+                    ShowOccupiedRooms();
                     Console.Write("\n\t¿De que habitación deseas hacer el check out? ");
-                    string resHabitaciones = Console.ReadLine();
+                    string roomsAnswer = Console.ReadLine();
 
-                    if (ComprobarHabitacionLlena(resHabitaciones))
+                    if (CheckFullRooms(roomsAnswer))
                     {
-                        VaciarHabitacion(dni, resHabitaciones);
+                        EmptyRoom(dni, roomsAnswer);
                     }
                     else
                     {
@@ -402,91 +404,91 @@ namespace Hotel
             }
         }
 
-        private static void PintarHabitacionesOcupadas()
+        private static void ShowOccupiedRooms()
         {
             Console.Clear();
             Console.WriteLine("\n\tHabitaciones ocupadas:");
-            conexion.Open();
-            SqlCommand comando = new SqlCommand(queries[9], conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            while (clientes.Read())
+            connection.Open();
+            SqlCommand command = new SqlCommand(queries[9], connection);
+            SqlDataReader client = command.ExecuteReader();
+            while (client.Read())
             {
-                Console.WriteLine($"\t{ clientes["CodHabitacion"]} {clientes["Estado"]} ");
+                Console.WriteLine($"\t{ client["CodHabitacion"]} {client["Estado"]} ");
             }
-            conexion.Close();
+            connection.Close();
         }
 
-        private static bool ComprobarHabitacionLlena(string resHabitaciones)
+        private static bool CheckFullRooms(string roomsAnswer)
         {
-            conexion.Open();
-            string query = queries[7] + $"'{resHabitaciones}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            if (clientes.Read())
+            connection.Open();
+            string query = queries[7] + $"'{roomsAnswer}'";
+            SqlCommand command = new SqlCommand(query, connection);
+            SqlDataReader client = command.ExecuteReader();
+            if (client.Read())
             {
-                conexion.Close();
+                connection.Close();
                 return true;
             }
             else
             {
-                conexion.Close();
+                connection.Close();
                 return false;
             }
         }
 
-        private static void VaciarHabitacion(string dni, string resHabitaciones)
+        private static void EmptyRoom(string dni, string roomsAnswer)
         {
-            conexion.Open();
+            connection.Open();
 
-            string query = queries[5] + $"'disponible' WHERE CodHabitacion = '{resHabitaciones}'";
-            SqlCommand comando = new SqlCommand(query, conexion);
-            comando.ExecuteNonQuery();
+            string query = queries[5] + $"'disponible' WHERE CodHabitacion = '{roomsAnswer}'";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
 
             DateTime checkOutTime = DateTime.Now;
 
-            conexion.Open();
+            connection.Open();
 
-            string query2 = queries[8] + $"'{checkOutTime.ToString()}' WHERE CodHabitacion = '{resHabitaciones}'";
-            SqlCommand comando2 = new SqlCommand(query2, conexion);
-            comando2.ExecuteNonQuery();
+            string query2 = queries[8] + $"'{checkOutTime.ToString()}' WHERE CodHabitacion = '{roomsAnswer}'";
+            SqlCommand command2 = new SqlCommand(query2, connection);
+            command2.ExecuteNonQuery();
 
-            conexion.Close();
+            connection.Close();
 
             Console.Clear();
-            Console.WriteLine($"\n\tCheck out de la habitacion {resHabitaciones}, para el cliente {dni}, el día {checkOutTime.ToString()}.");
+            Console.WriteLine($"\n\tCheck out de la habitacion {roomsAnswer}, para el cliente {dni}, el día {checkOutTime.ToString()}.");
             Thread.Sleep(3000);
             Console.Clear();
         }
 
 
         //Ver habitaciones
-        static void VerHabitaciones()
+        static void SeeRooms()
         {
-            bool resIncorrecta;
+            bool incorrectAnswer;
             bool stay = true;
 
             while (stay)
             {
                 do
                 {
-                    resIncorrecta = false;
-                    int RespMenu = Menu2();
+                    incorrectAnswer = false;
+                    int menu2Answer = Menu2();
                     Console.Clear();
 
-                    switch (RespMenu)
+                    switch (menu2Answer)
                     {
                         case 1:
-                            ListadoTodasLasHabitaciones();
+                            ShowAllRooms();
                             break;
 
                         case 2:
-                            ListadoHabitacionesOcupadas();
+                            ShowAllOccupiedRooms();
                             break;
 
                         case 3:
-                            ListadoHabitacionesDisponibles();
+                            ShowAllEmptyRooms();
                             break;
 
                         case 4:
@@ -495,14 +497,14 @@ namespace Hotel
                             break;
 
                         default:
-                            resIncorrecta = true;
+                            incorrectAnswer = true;
                             Console.WriteLine("\tRespuesta incorrecta. Pruebe otra vez.");
                             Thread.Sleep(2000);
                             Console.Clear();
                             break;
                     }
 
-                } while (resIncorrecta == true);
+                } while (incorrectAnswer == true);
             }
         }
 
@@ -517,74 +519,74 @@ namespace Hotel
                 "\n\t4.- Salir" +
                 "\n\n\t-->");
 
-            int RespMenu2 = Convert.ToInt32(Console.ReadLine());
-            return RespMenu2;
+            int menu2Answer = Convert.ToInt32(Console.ReadLine());
+            return menu2Answer;
         }
 
-        private static void ListadoTodasLasHabitaciones()
+        private static void ShowAllRooms()
         {
             Console.Clear();
             Console.WriteLine("\n\tListado de todas las habitaciones con nombre de su huésped o vacía: \n");
-            conexion.Open();
-            SqlCommand comando = new SqlCommand(queries[12], conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            while (clientes.Read())
+            connection.Open();
+            SqlCommand command = new SqlCommand(queries[12], connection);
+            SqlDataReader client = command.ExecuteReader();
+            while (client.Read())
 
             {
-                string nombre;
-                if (clientes["Nombre"].ToString() != "")
+                string name;
+                if (client["Nombre"].ToString() != "")
                 {
-                    nombre = $" {clientes["Nombre"].ToString()}";
+                    name = $" {client["Nombre"].ToString()}";
                 }
                 else
                 {
-                    nombre = string.Empty;
+                    name = string.Empty;
                 }
-                Console.WriteLine($"\t{clientes["CodHabitacion"]} {clientes["Estado"]}{nombre}");
+                Console.WriteLine($"\t{client["CodHabitacion"]} {client["Estado"]}{name}");
             }
-            conexion.Close();
+            connection.Close();
             Console.ReadLine();
             Console.Clear();
         }
 
-        private static void ListadoHabitacionesOcupadas()
+        private static void ShowAllOccupiedRooms()
         {
             Console.Clear();
             Console.WriteLine("\n\tVer listado de habitaciones ocupadas con el nombre de su huésped: \n");
-            conexion.Open();
-            SqlCommand comando = new SqlCommand(queries[13], conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            while (clientes.Read())
+            connection.Open();
+            SqlCommand command = new SqlCommand(queries[13], connection);
+            SqlDataReader client = command.ExecuteReader();
+            while (client.Read())
 
             {
-                string nombre;
-                if (clientes["Nombre"].ToString() != "")
+                string name;
+                if (client["Nombre"].ToString() != "")
                 {
-                    nombre = $" {clientes["Nombre"].ToString()}";
+                    name = $" {client["Nombre"].ToString()}";
                 }
                 else
                 {
-                    nombre = string.Empty;
+                    name = string.Empty;
                 }
-                Console.WriteLine($"\t{clientes["CodHabitacion"]} {clientes["Estado"]}{nombre}");
+                Console.WriteLine($"\t{client["CodHabitacion"]} {client["Estado"]}{name}");
             }
-            conexion.Close();
+            connection.Close();
             Console.ReadLine();
             Console.Clear();
         }
 
-        private static void ListadoHabitacionesDisponibles()
+        private static void ShowAllEmptyRooms()
         {
             Console.Clear();
             Console.WriteLine("\n\tListado de habitaciones vacías: \n");
-            conexion.Open();
-            SqlCommand comando = new SqlCommand(queries[3], conexion);
-            SqlDataReader clientes = comando.ExecuteReader();
-            while (clientes.Read())
+            connection.Open();
+            SqlCommand command = new SqlCommand(queries[3], connection);
+            SqlDataReader client = command.ExecuteReader();
+            while (client.Read())
             {
-                Console.WriteLine($"\t{ clientes["CodHabitacion"]} {clientes["Estado"]} ");
+                Console.WriteLine($"\t{ client["CodHabitacion"]} {client["Estado"]} ");
             }
-            conexion.Close();
+            connection.Close();
             Console.ReadLine();
             Console.Clear();
 
