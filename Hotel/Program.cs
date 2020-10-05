@@ -9,9 +9,6 @@ namespace Hotel
     {
         static string connectionString = ConfigurationManager.ConnectionStrings["HOTEL"].ConnectionString;
         static SqlConnection conexion = new SqlConnection(connectionString);
-        //static string cadena;
-        //static SqlCommand comando;
-        //static SqlDataReader registros;
 
         public static string[] queries = {
             "SELECT DNI FROM Clientes WHERE DNI=",  //0
@@ -109,7 +106,7 @@ namespace Hotel
         //Registro
         static void Registro()
         {
-            string dni = "";
+            string dni = string.Empty;
             do
             {
                 Console.Write("\n\tIntroduce tu DNI: ");
@@ -174,7 +171,7 @@ namespace Hotel
         //Editar Cliente
         static void EditarCliente()
         {
-            string dni = "";
+            string dni = string.Empty;
             bool invalidDni = false;
 
             do
@@ -198,7 +195,6 @@ namespace Hotel
                     if (ComprobarCliente(dni))
                     {
                         ActualizarClienteConDni(dni);
-
                     }
                     else
                     {
@@ -242,7 +238,7 @@ namespace Hotel
         //CheckIn
         static void CheckIn()
         {
-            string dni = "";
+            string dni = string.Empty;
             do
             {
                 Console.Write("\n\tIntroduce el DNI del usuario para hacer el check in: (Salir para salir) ");
@@ -359,7 +355,7 @@ namespace Hotel
         //CheckOut
         static void CheckOut()
         {
-            string dni = "";
+            string dni = string.Empty;
             do
             {
                 Console.Write("\n\tIntroduce el DNI del usuario para hacer el check out: (Salir para salir) ");
@@ -542,7 +538,7 @@ namespace Hotel
                 }
                 else
                 {
-                    nombre = "";
+                    nombre = string.Empty;
                 }
                 Console.WriteLine($"\t{clientes["CodHabitacion"]} {clientes["Estado"]}{nombre}");
             }
@@ -568,7 +564,7 @@ namespace Hotel
                 }
                 else
                 {
-                    nombre = "";
+                    nombre = string.Empty;
                 }
                 Console.WriteLine($"\t{clientes["CodHabitacion"]} {clientes["Estado"]}{nombre}");
             }
