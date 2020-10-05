@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading;
 
 namespace Hotel
@@ -30,7 +29,6 @@ namespace Hotel
             "SELECT  H.CodHabitacion, H.Estado, C.Nombre FROM Habitaciones h FULL OUTER JOIN Reservas r ON r.CodHabitacion=h.CodHabitacion and r.FechaCheckOut is null FULL OUTER JOIN Clientes c ON c.DNI=r.DNICliente where r.FechaCheckOut is null and h.CodHabitacion is not null", //12
             "SELECT  H.CodHabitacion, H.Estado, C.Nombre FROM Habitaciones h FULL OUTER JOIN Reservas r ON r.CodHabitacion=h.CodHabitacion and r.FechaCheckOut is null FULL OUTER JOIN Clientes c ON c.DNI=r.DNICliente where r.FechaCheckOut is null and h.CodHabitacion is not null and H.Estado = 'reservado'" //13
         };
-
 
 
         static void Main(string[] args)
@@ -89,6 +87,7 @@ namespace Hotel
 
         }
 
+
         //Menu
         static int Menu()
         {
@@ -105,6 +104,7 @@ namespace Hotel
             int RespMenu = Convert.ToInt32(Console.ReadLine());
             return RespMenu;
         }
+
 
         //Registro
         static void Registro()
@@ -169,6 +169,7 @@ namespace Hotel
 
             conexion.Close();
         }
+
 
         //Editar Cliente
         static void EditarCliente()
@@ -236,6 +237,7 @@ namespace Hotel
             Thread.Sleep(3000);
             Console.Clear();
         }
+
 
         //CheckIn
         static void CheckIn()
@@ -353,6 +355,7 @@ namespace Hotel
 
         }
 
+
         //CheckOut
         static void CheckOut()
         {
@@ -461,6 +464,7 @@ namespace Hotel
             Console.Clear();
         }
 
+
         //Ver habitaciones
         static void VerHabitaciones()
         {
@@ -506,6 +510,7 @@ namespace Hotel
             }
         }
 
+
         //Menu 2
         static int Menu2()
         {
@@ -531,10 +536,13 @@ namespace Hotel
 
             {
                 string nombre;
-                if (clientes["Nombre"].ToString() != "") {
+                if (clientes["Nombre"].ToString() != "")
+                {
                     nombre = $" {clientes["Nombre"].ToString()}";
-                } else { 
-                    nombre = ""; 
+                }
+                else
+                {
+                    nombre = "";
                 }
                 Console.WriteLine($"\t{clientes["CodHabitacion"]} {clientes["Estado"]}{nombre}");
             }
